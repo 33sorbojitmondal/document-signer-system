@@ -1,0 +1,25 @@
+\chapter{Introduction}
+
+\section{Background}
+
+In the contemporary digital era, organizations across all sectors are transitioning from paper-based documentation to electronic document management systems. This transformation, while offering substantial improvements in efficiency, accessibility, and cost reduction, introduces new categories of security challenges that were not present in traditional physical document workflows. When a document exists purely in digital form, it becomes trivially easy for malicious actors to create unauthorized copies, alter content without visible traces, or impersonate legitimate signatories. These vulnerabilities undermine the fundamental trust that document signing is intended to establish.
+
+Digital signatures emerged as the cryptographic solution to this problem, providing a mathematical framework through which the authenticity and integrity of electronic documents can be verified with the same level of confidence as handwritten signatures on physical paper. A digital signature binds the identity of a signer to the specific content of a document at a particular point in time, creating a permanent and verifiable record that cannot be repudiated by the signer and cannot be forged by third parties.
+
+\section{Problem Statement}
+
+Despite the theoretical maturity of digital signature technology, practical implementations remain fragmented and inaccessible for many organizations. Traditional paper-based document signing continues to dominate in sectors where legal validity and audit trails are paramount, primarily because existing digital solutions are either prohibitively expensive, require specialized hardware, or lack user-friendly interfaces that non-technical personnel can operate confidently. Additionally, many current systems fail to provide transparent tamper detection mechanisms, leaving users unable to independently verify whether a received document has been modified after signing.
+
+The absence of standardized, accessible digital signature mechanisms in current systems creates a significant gap between the security capabilities that modern cryptography offers and the tools actually available to end users. This gap represents both a security risk for organizations handling sensitive documents and a barrier to the complete digitization of administrative and legal workflows.
+
+\section{Objectives}
+
+The primary objective of this project is to design and implement a secure, user-friendly digital signature system that democratizes access to cryptographic document authentication. The project aims to develop RSA-2048 based digital signature mechanisms that provide mathematically provable document authentication, implement robust tamper detection that identifies unauthorized modifications to signed documents, create an intuitive web-based platform that enables users without cryptographic expertise to sign and verify documents, and establish a secure database architecture for storing user credentials, document metadata, and cryptographic signature records.
+
+\section{Scope}
+
+The scope of this project encompasses the complete software development lifecycle from requirements analysis through deployment-ready implementation. The system handles user registration and authentication, document upload in common file formats, digital signature generation and storage, signature verification with tamper detection, and a web-based dashboard for document management. The project does not extend to legal compliance certification, hardware security module integration, or multi-party signing workflows, which are identified as directions for future development.
+
+\section{Organization of the Report}
+
+This report is organized into eight chapters. Chapter~2 presents the theoretical background and literature survey. Chapter~3 discusses system analysis including the limitations of existing approaches. Chapter~4 specifies hardware and software requirements. Chapter~5 describes system design including architecture, data flow, and database modeling. Chapter~6 explains implementation details. Chapter~7 presents testing methodology and results with application screenshots. Chapter~8 concludes the report and outlines future scope.

@@ -1,0 +1,76 @@
+\chapter{Implementation}
+
+\section{Development Environment}
+
+The implementation was carried out using Visual Studio Code as the integrated development environment with the Python extension for syntax highlighting, linting, and debugging support. The project was initialized as a Django 4.2 application with a dedicated signer application module containing all business logic, models, views, and URL configurations. Dependencies were managed through a requirements.txt file specifying exact versions of Django, the cryptography library, and Pillow for image handling support.
+
+The project directory was organized to reflect the layered architecture described in Chapter~5. The \texttt{document\_signer} package contains project-level settings and URL routing, the \texttt{signer} application contains models, views, forms, and cryptographic utilities, the \texttt{templates} directory contains HTML templates for all user-facing pages, and the \texttt{static} directory contains CSS stylesheets for the dark-themed interface.
+
+\section{Cryptographic Module}
+
+The cryptographic operations are centralized in the \texttt{crypto\_utils.py} module, which provides a clean interface between the Django application and the underlying cryptography library. The \texttt{generate\_rsa\_key\_pair} function creates a new RSA-2048 key pair using the standard public exponent of 65537. The \texttt{sign\_document} function implements the complete signing pipeline by computing a SHA-256 hash of the document content, loading the signer's private key from its PEM representation, and applying the RSA-PSS signing operation with maximum salt length.
+
+The \texttt{verify\_document\_signature} function reverses this process by loading the public key, recomputing the document hash, decoding the stored signature, and invoking the RSA-PSS verification operation. The function returns a boolean indicating verification success, with any cryptographic exception resulting in a negative outcome to prevent information leakage about the nature of verification failures.
+
+\section{Application Logic}
+
+User registration is handled by the \texttt{register\_view} function, which processes the registration form, creates a new User record upon valid submission, immediately generates an RSA key pair, and creates the associated UserProfile record storing both keys. Document upload is processed by the \texttt{dashboard\_view}, which handles multipart form submissions, computes the SHA-256 hash of the uploaded content, and creates a Document record with status set to uploaded.
+
+The \texttt{sign\_document\_view} retrieves the document, verifies ownership and unsigned status, reads the file content, invokes the signing function with the user's private key, creates a DigitalSignature record, and updates the document status to signed. The \texttt{verify\_document\_view} performs cryptographic signature verification and hash comparison to determine whether the document is authentic, tampered, or invalid.
+
+\section{User Interface Implementation}
+
+The user interface implements a modern dark theme designed for professional presentation and comfortable extended use. The login and registration pages feature a centered card layout with system branding and shield iconography against a gradient dark background. Authenticated users access the main application through a fixed sidebar navigation panel providing links to the dashboard, verification page, and logout action.
+
+Figure~\ref{fig:login} shows the login interface of the implemented system. The page presents a clean authentication form with username and password fields, consistent branding, and a registration link for new users.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{screenshot_login.png}
+\caption{Login Page of the Document Signer System}
+\label{fig:login}
+\end{figure}
+
+Figure~\ref{fig:register} presents the registration page, which informs users that an RSA key pair will be generated automatically upon account creation. This design choice ensures that every user possesses a cryptographic identity from the moment of registration.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{screenshot_register.png}
+\caption{User Registration Page with Automatic Key Generation}
+\label{fig:register}
+\end{figure}
+
+Figure~\ref{fig:dashboard} displays the main dashboard where users can upload new documents and manage existing ones. The interface includes an upload form, summary statistics showing total documents and the RSA-2048 algorithm in use, and a document table with status badges and action buttons for signing, verifying, and viewing details.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{screenshot_dashboard.png}
+\caption{Dashboard with Document Upload and Management}
+\label{fig:dashboard}
+\end{figure}
+
+Figure~\ref{fig:verify} shows the signature verification interface where users enter a document identifier and receive detailed verification output including hash values, algorithm information, and a clear validity result.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{screenshot_verify.png}
+\caption{Signature Verification Interface}
+\label{fig:verify}
+\end{figure}
+
+Figure~\ref{fig:detail} presents the document detail page, which displays comprehensive metadata including document ownership, verification status, file hash, and digital signature information.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{screenshot_document_detail.png}
+\caption{Document Detail Page with Signature Information}
+\label{fig:detail}
+\end{figure}
+
+\section{Database Implementation}
+
+The database schema was implemented using Django models and migrated to SQLite using Django's migration framework. The UserProfile model extends the built-in User model through a one-to-one relationship. The Document model stores file references using Django's FileField with upload directory configuration. The DigitalSignature model enforces a one-to-one relationship with Document, ensuring that each document can have at most one signature record. Foreign key constraints maintain referential integrity between all entities.
+
+\section{Security Considerations in Implementation}
+
+During implementation, several security practices were followed. Passwords are stored using Django's built-in password hashing rather than plain text. Private keys are stored in the database for demonstration purposes, though production deployment would require encrypted key storage or hardware security modules. All file uploads are restricted to authenticated users, and document access is scoped to the owning user through view-level authorization checks. The cryptographic module uses only established algorithms and padding schemes from the Python cryptography library without custom cryptographic primitives.

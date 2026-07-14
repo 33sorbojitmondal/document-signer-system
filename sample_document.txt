@@ -1,0 +1,10 @@
+This is a sample document for testing the Document Signer System.
+The system uses RSA-2048 cryptography with SHA-256 hashing.
+Upload this file to test digital signing and verification.
+
+Prepared by:
+RAHUL PANJA (18700122011)
+SK SAHIL AKTAR (18700122093)
+
+Techno International New Town
+Department of Computer Science & Engineering

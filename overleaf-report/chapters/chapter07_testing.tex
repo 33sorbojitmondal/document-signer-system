@@ -1,0 +1,68 @@
+\chapter{Testing and Results}
+
+\section{Testing Methodology}
+
+The testing approach for this project encompasses both unit-level testing of individual cryptographic functions and integration testing of complete user workflows through the web interface. Unit testing focused on verifying that the RSA key generation produces valid key pairs, that the sign and verify functions produce consistent results for unmodified documents, that verification correctly fails for documents modified after signing, and that verification correctly fails for signatures created with different key pairs. Integration testing validated the complete user journey from registration through document upload, signing, and verification using the deployed Django application.
+
+Testing was conducted on a Windows 11 development machine with Python 3.11, Django 4.2.16, and the cryptography library version 43.0. Each test case was executed multiple times to confirm reproducibility of results. The sample document provided with the project, \texttt{sample\_document.txt}, was used as the standard test file for signing and verification demonstrations.
+
+\section{Unit Test Results}
+
+The cryptographic module was tested independently of the web framework to confirm the correctness of the underlying security operations. Key generation was verified to produce 2048-bit RSA keys in PEM format. Signing produced a base64-encoded signature of 344 characters for the test document. Verification of the original document content returned a positive result, while verification of modified content returned a negative result, confirming that the tamper detection mechanism operates correctly at the cryptographic level.
+
+\section{Integration Test Cases}
+
+Table~\ref{tab:testcases} summarizes the integration test cases executed on the complete system and their observed outcomes.
+
+\begin{table}[H]
+\centering
+\caption{Integration Test Cases and Results}
+\label{tab:testcases}
+\begin{tabularx}{\textwidth}{|c|X|c|c|}
+\hline
+\textbf{TC} & \textbf{Test Description} & \textbf{Expected Result} & \textbf{Actual Result} \\
+\hline
+TC-01 & User registration with valid data & Account created with RSA key pair & Pass \\
+\hline
+TC-02 & User login with valid credentials & Dashboard displayed & Pass \\
+\hline
+TC-03 & Login with invalid password & Access denied & Pass \\
+\hline
+TC-04 & Upload document with title and file & Document stored with hash & Pass \\
+\hline
+TC-05 & Sign uploaded document & Status changed to Signed & Pass \\
+\hline
+TC-06 & Verify unmodified signed document & Valid signature reported & Pass \\
+\hline
+TC-07 & Modify signed document and verify & Tampering detected & Pass \\
+\hline
+TC-08 & Verify unsigned document & Error message displayed & Pass \\
+\hline
+TC-09 & View document detail page & Metadata and signature shown & Pass \\
+\hline
+TC-10 & Prevent duplicate signing & Warning message displayed & Pass \\
+\hline
+\end{tabularx}
+\end{table}
+
+All ten integration test cases passed successfully, demonstrating that the system behaves correctly across the complete document signing and verification workflow.
+
+\section{Functional Results}
+
+The user registration test confirmed that new accounts are created successfully with automatically generated RSA-2048 key pairs stored in the UserProfile table. The login test verified that authenticated sessions are established correctly and unauthorized access to protected pages is redirected to the login screen. The document upload test demonstrated successful file storage with correct hash computation and database record creation with status set to uploaded.
+
+The signature generation test produced valid RSA-PSS signatures for uploaded documents, with the document status updating to signed and all signature metadata including the algorithm identifier, timestamp, and document hash being recorded accurately. The signature verification test on unmodified signed documents returned a valid result with the status updating to verified, confirming both cryptographic signature validity and hash consistency.
+
+\section{Tamper Detection Results}
+
+The tamper detection test involved modifying the content of a signed document and executing the verification process. The system correctly identified the document as tampered by detecting a mismatch between the current content hash and the hash recorded at signing time. This result confirms that the integrity protection mechanism functions as designed and provides users with a reliable indication when a document has been altered after signing.
+
+The invalid signature test confirmed that verification fails appropriately when signature data is corrupted or when verification is attempted on documents that have not yet been signed. These results collectively demonstrate that the system satisfies its primary security requirements for authenticity, integrity, and tamper detection.
+
+\section{Performance Observations}
+
+During testing, RSA-2048 key generation completed within approximately one second on the development hardware. Document signing and verification operations completed in under 100 milliseconds for text documents of typical size. Page load times for the dashboard and verification interfaces remained below one second during local testing. These performance characteristics are adequate for the academic demonstration and small-scale usage scenarios targeted by this project.
+
+\section{Summary of Results}
+
+The testing phase confirmed that the Document Signer System successfully implements secure digital signing, reliable verification, and effective tamper detection within a functional web-based interface. The screenshots presented in Chapter~6 further validate that the user interface is complete, consistent, and suitable for project demonstration. The system is therefore ready for academic submission and viva presentation.

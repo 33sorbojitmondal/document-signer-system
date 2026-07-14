@@ -1,0 +1,166 @@
+\chapter{System Design}
+
+\section{System Architecture}
+
+The Document Signer System is architected using a layered approach with a partial Model-View-Controller pattern that ensures clear separation of concerns across three primary layers. The View Layer comprises the HTML templates and CSS stylesheets that render the user interface, including the login page, registration form, document dashboard, signature verification screen, and document detail views. This layer is responsible solely for presenting information to the user and collecting input, without containing any business logic or database access code.
+
+The Controller and Logic Layer is implemented through Django views and the dedicated cryptographic utility module. Django views handle HTTP request routing, form validation, authentication checks, and coordination between the view templates and the data layer. The \texttt{crypto\_utils} module encapsulates all cryptographic operations including RSA key pair generation, document hashing, signature creation, and signature verification, ensuring that cryptographic logic is centralized and testable independent of the web framework.
+
+The Database Layer uses SQLite through Django's Object-Relational Mapping system to persist user accounts, extended user profiles containing cryptographic keys, document records with file references and metadata, and digital signature records linking signers to documents with signature data and timestamps.
+
+Figure~\ref{fig:architecture} illustrates the layered architecture of the system.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    layer/.style={draw, rounded corners, minimum width=11cm, minimum height=1.3cm, align=center, fill=#1, font=\small},
+    arrow/.style={-{Stealth[length=2.5mm]}, thick}
+]
+    \node[layer=blue!15] (view) {\textbf{View Layer}\\HTML Templates, CSS, Bootstrap 5 UI};
+    \node[layer=green!15, below=0.5cm of view] (controller) {\textbf{Controller \& Logic Layer}\\Django Views, Forms, crypto\_utils.py};
+    \node[layer=orange!15, below=0.5cm of controller] (db) {\textbf{Database Layer}\\SQLite --- User, UserProfile, Document, DigitalSignature};
+    \draw[arrow] (view) -- (controller);
+    \draw[arrow] (controller) -- (db);
+\end{tikzpicture}
+\caption{Layered MVC Architecture of the Document Signer System}
+\label{fig:architecture}
+\end{figure}
+
+\section{Data Flow Diagram}
+
+\subsection{Context Level DFD (Level 0)}
+
+At the context level, the data flow diagram shows a single external entity, the User, interacting with the Document Signer System through four primary data flows: login credentials, document files, signature requests, and verification results. The system processes these inputs and returns authentication confirmations, signed document records, verification status reports, and document management information.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    entity/.style={draw, thick, minimum width=2.2cm, minimum height=1cm, align=center},
+    process/.style={draw, circle, thick, minimum size=2.6cm, align=center, font=\small},
+    flow/.style={-{Stealth[length=2mm]}, font=\scriptsize}
+]
+    \node[entity] (user) {User};
+    \node[process, right=3.5cm of user] (system) {Document\\Signer\\System};
+    \draw[flow] (user) -- node[above]{Credentials, Documents} (system);
+    \draw[flow] (system) -- node[below]{Signatures, Status} (user);
+\end{tikzpicture}
+\caption{Context Level Data Flow Diagram (Level 0)}
+\label{fig:dfd0}
+\end{figure}
+
+\subsection{Level 1 Data Flow Diagram}
+
+At Level 1, the system decomposes into five major processes: Login and Registration, File Upload, Signature Generation, Storage Management, and Verification. Figure~\ref{fig:dfd1} presents this decomposition.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+    entity/.style={draw, thick, minimum width=1.8cm, minimum height=0.9cm, align=center, font=\scriptsize},
+    process/.style={draw, rounded corners, thick, minimum width=2.4cm, minimum height=1cm, align=center, font=\scriptsize, fill=blue!8},
+    store/.style={draw, cylinder, shape border rotate=90, aspect=0.25, minimum height=1.2cm, minimum width=1.6cm, align=center, font=\scriptsize},
+    flow/.style={-{Stealth[length=1.8mm]}, font=\tiny}
+]
+    \node[entity] (user) {User};
+    \node[process, right=1.8cm of user] (p1) {1.0 Login /\\Registration};
+    \node[process, below=0.9cm of p1] (p2) {2.0 File\\Upload};
+    \node[process, below=0.9cm of p2] (p3) {3.0 Signature\\Generation};
+    \node[process, below=0.9cm of p3] (p4) {4.0 Verification};
+    \node[store, right=2.2cm of p2] (db) {Database};
+    \draw[flow] (user) -- (p1);
+    \draw[flow] (user) -- (p2);
+    \draw[flow] (user) -- (p4);
+    \draw[flow] (p1) -- (db);
+    \draw[flow] (p2) -- (db);
+    \draw[flow] (p2) -- (p3);
+    \draw[flow] (p3) -- (db);
+    \draw[flow] (p4) -- (db);
+    \draw[flow] (p4) -- node[below, sloped]{Result} (user);
+\end{tikzpicture}%
+}
+\caption{Level 1 Data Flow Diagram}
+\label{fig:dfd1}
+\end{figure}
+
+\section{Entity-Relationship Model}
+
+The database schema consists of three primary entities in addition to Django's built-in User model. The User entity stores standard authentication fields including username, email, password hash, and account timestamps. The UserProfile entity maintains a one-to-one relationship with User and stores the PEM-encoded RSA private key and public key along with the profile creation timestamp.
+
+The Document entity stores the document title, file path reference, SHA-256 content hash, status enumeration, upload timestamp, and a foreign key reference to the owning user. The DigitalSignature entity maintains a one-to-one relationship with Document and stores the base64-encoded signature data, the document hash at the time of signing, the signing algorithm identifier, the signing timestamp, and a foreign key reference to the signing user.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    entity/.style={draw, thick, minimum width=3.2cm, align=center, font=\small},
+    rel/.style={font=\scriptsize}
+]
+    \node[entity] (user) {\begin{tabular}{c}\textbf{USER} \\ \textit{username, email, password}\end{tabular}};
+    \node[entity, right=3cm of user] (profile) {\begin{tabular}{c}\textbf{USER\_PROFILE} \\ \textit{private\_key, public\_key}\end{tabular}};
+    \node[entity, below=2cm of user] (doc) {\begin{tabular}{c}\textbf{DOCUMENT} \\ \textit{title, file, file\_hash, status}\end{tabular}};
+    \node[entity, right=3cm of doc] (sig) {\begin{tabular}{c}\textbf{DIGITAL\_SIGNATURE} \\ \textit{signature\_data, document\_hash}\end{tabular}};
+    \draw[thick] (user) -- node[rel, above]{1:1} (profile);
+    \draw[thick] (user) -- node[rel, left]{1:N} (doc);
+    \draw[thick] (doc) -- node[rel, above]{1:1} (sig);
+    \draw[thick] (user) -- node[rel, below, sloped]{1:N} (sig);
+\end{tikzpicture}
+\caption{Entity-Relationship Diagram}
+\label{fig:er}
+\end{figure}
+
+\section{Use Case Diagram}
+
+The primary actor in the system is the Registered User, who interacts with the system through six core use cases: Register, Login, Upload Document, Sign Document, Verify Signature, and View Document Details. Figure~\ref{fig:usecase} illustrates these interactions.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    actor/.style={draw, thick, minimum width=1.2cm},
+    usecase/.style={draw, ellipse, minimum width=3.2cm, minimum height=1cm, align=center, font=\small, fill=yellow!10},
+    dash/.style={dashed, thick}
+]
+    \node[actor, label=below:{\scriptsize Registered User}] (actor) at (-4,0) {};
+    \draw[thick] (-4,-0.8) -- (-4,0.8);
+    \draw[thick] (-4,0.8) -- (-3.4,0.3);
+    \draw[thick] (-4,0.8) -- (-4.6,0.3);
+    \draw[thick] (-4,-0.8) -- (-3.5,-1.5);
+    \draw[thick] (-4,-0.8) -- (-4.5,-1.5);
+    \node[usecase] (uc1) at (0,2.5) {Register};
+    \node[usecase] (uc2) at (0,1.2) {Login};
+    \node[usecase] (uc3) at (0,0) {Upload Document};
+    \node[usecase] (uc4) at (0,-1.2) {Sign Document};
+    \node[usecase] (uc5) at (0,-2.5) {Verify Signature};
+    \node[usecase] (uc6) at (4,-0.6) {View Details};
+    \draw[dash] (-3.4,0) -- (uc1);
+    \draw[dash] (-3.4,0) -- (uc2);
+    \draw[dash] (-3.4,0) -- (uc3);
+    \draw[dash] (-3.4,0) -- (uc4);
+    \draw[dash] (-3.4,0) -- (uc5);
+    \draw[dash] (-3.4,0) -- (uc6);
+\end{tikzpicture}
+\caption{Use Case Diagram of the Document Signer System}
+\label{fig:usecase}
+\end{figure}
+
+\section{System Workflow}
+
+The operational workflow of the system follows a sequential process beginning with user authentication, continuing through document upload and signing, and concluding with optional verification. When a user registers, the system creates an account and generates an RSA key pair before redirecting the user to the dashboard. From the dashboard, the user uploads a document which is stored with an initial hash value and status marked as uploaded. The user then initiates signing, after which the document status changes to signed and a DigitalSignature record is created. Verification can be performed at any subsequent time to confirm authenticity or detect tampering.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    step/.style={draw, rounded corners, thick, minimum width=2.8cm, minimum height=1cm, align=center, font=\small, fill=cyan!10},
+    arrow/.style={-{Stealth[length=2.5mm]}, thick}
+]
+    \node[step] (s1) {Register / Login};
+    \node[step, right=0.8cm of s1] (s2) {Upload\\Document};
+    \node[step, right=0.8cm of s2] (s3) {Generate\\Signature};
+    \node[step, right=0.8cm of s3] (s4) {Verify\\Signature};
+    \draw[arrow] (s1) -- (s2);
+    \draw[arrow] (s2) -- (s3);
+    \draw[arrow] (s3) -- (s4);
+\end{tikzpicture}
+\caption{System Workflow Sequence}
+\label{fig:workflow}
+\end{figure}
+
+This design specification provides the structural foundation upon which the implementation described in the following chapter was developed.

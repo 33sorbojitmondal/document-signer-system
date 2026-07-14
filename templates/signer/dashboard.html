@@ -1,0 +1,106 @@
+{% extends 'signer/base.html' %}
+
+{% block title %}Dashboard - Document Signer System{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Dashboard</h1>
+    <p class="text-muted">Upload, sign, and manage your digital documents</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card upload-card">
+            <div class="card-header">
+                <i class="bi bi-cloud-upload"></i> Upload Document
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Document Title</label>
+                        {{ upload_form.title }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Choose File</label>
+                        {{ upload_form.file }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-upload"></i> Upload
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card stats-card mt-4">
+            <div class="card-body">
+                <div class="stat-item">
+                    <span class="stat-label">Total Documents</span>
+                    <span class="stat-value">{{ documents|length }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Algorithm</span>
+                    <span class="stat-value">RSA-2048</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card documents-card">
+            <div class="card-header">
+                <i class="bi bi-file-earmark-text"></i> My Documents
+            </div>
+            <div class="card-body p-0">
+                {% if documents %}
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Status</th>
+                                <th>Uploaded</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for doc in documents %}
+                            <tr>
+                                <td>{{ doc.id }}</td>
+                                <td>{{ doc.title }}</td>
+                                <td>
+                                    <span class="badge status-{{ doc.status }}">{{ doc.get_status_display }}</span>
+                                </td>
+                                <td>{{ doc.uploaded_at|date:"M d, Y H:i" }}</td>
+                                <td class="action-buttons">
+                                    {% if doc.status == 'uploaded' %}
+                                    <a href="{% url 'sign_document' doc.id %}" class="btn btn-sm btn-success">
+                                        <i class="bi bi-pen"></i> Sign
+                                    </a>
+                                    {% endif %}
+                                    {% if doc.signature %}
+                                    <a href="{% url 'verify_document' doc.id %}" class="btn btn-sm btn-info">
+                                        <i class="bi bi-patch-check"></i> Verify
+                                    </a>
+                                    {% endif %}
+                                    <a href="{% url 'document_detail' doc.id %}" class="btn btn-sm btn-outline-light">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-inbox"></i>
+                    <p>No documents uploaded yet. Upload your first document to get started.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

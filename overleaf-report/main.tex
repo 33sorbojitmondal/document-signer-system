@@ -1,0 +1,89 @@
+\documentclass[12pt,a4paper]{report}
+
+% Encoding and fonts
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{newtxtext,newtxmath}
+
+% Page layout
+\usepackage[a4paper, left=1.25in, right=1in, top=1in, bottom=1in]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+% Graphics and tables
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+
+% Diagrams
+\usepackage{tikz}
+\usetikzlibrary{shapes,shapes.geometric,arrows,positioning,fit,backgrounds,calc,arrows.meta}
+
+% Headers and formatting
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{abstract}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+% Chapter formatting
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-20pt}{30pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries}{\thesubsection}{1em}{}
+
+% Figure and table numbering
+\numberwithin{figure}{chapter}
+\numberwithin{table}{chapter}
+
+% Header/footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Graphics path
+\graphicspath{{images/screenshots/}{images/}}
+
+% Metadata
+\hypersetup{
+    pdftitle={Digital Signature System - Project Report},
+    pdfauthor={Rahul Panja and SK Sahil Aktar},
+    pdfsubject={CS781 Project II Final Year Report}
+}
+
+\begin{document}
+
+\input{frontmatter/titlepage}
+\input{frontmatter/certificate}
+\input{frontmatter/acknowledgement}
+\input{frontmatter/abstract}
+
+\tableofcontents
+\listoffigures
+\listoftables
+\clearpage
+
+\input{chapters/chapter01_introduction}
+\input{chapters/chapter02_literature}
+\input{chapters/chapter03_analysis}
+\input{chapters/chapter04_requirements}
+\input{chapters/chapter05_design}
+\input{chapters/chapter06_implementation}
+\input{chapters/chapter07_testing}
+\input{chapters/chapter08_conclusion}
+
+\input{frontmatter/references}
+
+\end{document}

@@ -1,0 +1,25 @@
+\chapter{Literature Survey and Background}
+
+\section{Digital Signatures in Cryptography}
+
+The concept of digital signatures was first formally proposed by Diffie and Hellman in 1976 as an application of public-key cryptography \cite{diffie1976}. Unlike symmetric encryption systems that use a single shared key for both encryption and decryption, public-key cryptography employs mathematically related key pairs wherein information encrypted with one key can only be decrypted with the corresponding partner key. Digital signatures exploit this asymmetry by using the private key to create a signature that can only be verified using the associated public key, thereby proving that the signature was created by the holder of the private key.
+
+The security of digital signatures rests on the computational infeasibility of deriving a private key from its corresponding public key, a property guaranteed by the mathematical hardness of problems such as integer factorization in RSA and the elliptic curve discrete logarithm problem in ECDSA. Modern digital signature schemes also incorporate cryptographic hash functions to handle documents of arbitrary size, producing a fixed-length digest that is then signed rather than signing the entire document directly \cite{stallings2017}.
+
+\section{RSA Algorithm}
+
+The RSA algorithm, developed by Rivest, Shamir, and Adleman in 1977, remains one of the most widely deployed public-key cryptosystems \cite{rivest1978}. Its security derives from the difficulty of factoring the product of two large prime numbers. In the context of digital signatures, RSA with Probabilistic Signature Scheme padding and SHA-256 hashing provides a robust combination that is recommended by current cryptographic standards including NIST SP 800-57 and PKCS \#1 v2.2 \cite{nist2020dss,pkcs1}.
+
+For this project, RSA-2048 was selected as the key size, providing approximately 112 bits of security strength which is considered adequate for most commercial and governmental applications. The signing process computes a SHA-256 hash of the document content and then applies the RSA private key operation with PSS padding to produce the final signature. Verification reverses this process using the public key and compares the recovered hash against a freshly computed hash of the received document \cite{nist2020shs}.
+
+\section{Web Application Frameworks for Security Systems}
+
+Modern web frameworks such as Django provide built-in support for user authentication, session management, form validation, and database abstraction, making them suitable platforms for implementing security-critical applications. Django's Model-View-Controller architectural pattern naturally separates presentation logic from business rules and data persistence, which is essential for maintaining and auditing cryptographic applications \cite{django2024}. The Python cryptography library complements this framework by offering well-tested implementations of RSA operations that can be integrated into Django views and utility modules \cite{cryptography2024}.
+
+\section{Related Work}
+
+Several commercial digital signature platforms exist in the market, including DocuSign, Adobe Sign, and HelloSign, which provide cloud-based signing services with legal compliance features. Academic research has explored various enhancements including blockchain-based signature verification, biometric-augmented signing, and threshold signature schemes for distributed signing authority. However, these solutions typically require subscription fees, internet connectivity for verification, and trust in third-party certificate authorities. The present project addresses the educational and small-scale organizational need for a self-contained, transparent, and comprehensible digital signature implementation.
+
+\section{Research Gap Addressed}
+
+The gap addressed by this project lies in making cryptographic document signing accessible through a locally deployable, educational, and fully transparent implementation. Rather than relying on proprietary signing services, the Document Signer System exposes the complete signing and verification pipeline, enabling students and evaluators to understand precisely how document hashes are computed, how RSA signatures are generated, and how tampering is detected through hash comparison.

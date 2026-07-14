@@ -1,0 +1,52 @@
+\chapter{System Requirements}
+
+\section{Hardware Requirements}
+
+The Document Signer System is designed to operate on standard computing hardware without specialized cryptographic processors or hardware security modules. The development and testing environment requires a personal computer with an Intel Core i5 processor or equivalent, a minimum of 8 gigabytes of RAM, at least 500 megabytes of available storage for the application, database, and uploaded documents, and a network interface for browser-based access. These specifications are readily available in modern laptop and desktop computers used in academic and professional settings.
+
+For deployment in a laboratory or demonstration environment, a single machine can simultaneously host the Django application server and serve the web interface to multiple connected clients over a local network. No dedicated server hardware is required for the scope of this project, although production deployment could later utilize standard cloud virtual machines with equivalent or greater specifications.
+
+\section{Software Requirements}
+
+The software stack for this project consists entirely of open-source components that are freely available and well-documented. The operating system supported for development is Microsoft Windows 10 or 11, though the application is cross-platform and can be deployed on Linux servers. Python version 3.10 or higher serves as the primary programming language for implementing the cryptographic logic, business rules, and server-side processing. The Django web framework version 4.2 provides the application structure, URL routing, authentication system, and database abstraction layer.
+
+The cryptography library version 43.0 provides the RSA key generation, signing, and verification functions that form the security core of the application. SQLite serves as the embedded database engine for development and demonstration purposes, storing user accounts, document metadata, cryptographic keys, and signature records. The frontend is built with HTML5, CSS3, and Bootstrap 5 for responsive layout, with custom styling to achieve the dark-themed professional interface presented in the implementation screenshots. Visual Studio Code is used as the integrated development environment, and a modern web browser such as Google Chrome or Mozilla Firefox is used for testing and accessing the application interface.
+
+\section{Functional Requirements}
+
+The system must allow new users to register accounts and automatically generate RSA-2048 key pairs upon registration. Registered users must be able to log in and log out securely using username and password authentication with session management. Authenticated users must be able to upload documents in common file formats including PDF, text, Word documents, and images. The system must generate digital signatures for uploaded documents using the signer's private RSA key and SHA-256 hashing. Users must be able to verify signatures on their documents and receive clear feedback indicating whether the document is authentic, tampered, or has an invalid signature. The system must maintain a dashboard displaying all user documents with their current status.
+
+\section{Non-Functional Requirements}
+
+The system must respond to user actions within two seconds under normal operating conditions on standard hardware. The cryptographic implementation must use industry-standard algorithms and padding schemes without custom or unverified cryptographic primitives. The user interface must be intuitive enough for users without technical or cryptographic background to complete signing and verification workflows without training. The database must maintain referential integrity between users, documents, and signatures, and the application architecture must separate presentation, business logic, and data layers to facilitate maintenance and future enhancement.
+
+\section{Software Requirement Specification Summary}
+
+Table~\ref{tab:srs} summarizes the major software components and their roles within the system.
+
+\begin{table}[H]
+\centering
+\caption{Software Requirement Specification}
+\label{tab:srs}
+\begin{tabular}{|l|l|p{7.5cm}|}
+\hline
+\textbf{Component} & \textbf{Version} & \textbf{Purpose} \\
+\hline
+Python & 3.11 & Core programming language \\
+\hline
+Django & 4.2 & Web framework and MVC architecture \\
+\hline
+cryptography & 43.0 & RSA key generation and signing \\
+\hline
+SQLite & 3.x & Embedded relational database \\
+\hline
+Bootstrap & 5.3 & Responsive frontend layout \\
+\hline
+Visual Studio Code & Latest & Development environment \\
+\hline
+Web Browser & Latest & Application access and testing \\
+\hline
+\end{tabular}
+\end{table}
+
+These requirements collectively define the environment in which the Document Signer System was developed, tested, and prepared for academic demonstration.
