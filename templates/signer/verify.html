@@ -1,72 +1,53 @@
 {% extends 'signer/base.html' %}
 
-{% block title %}Verify Signature - Document Signer System{% endblock %}
+{% block title %}Verify Authority Signature{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h1>Verify Signature</h1>
-    <p class="text-muted">Confirm document authenticity and detect unauthorized modifications</p>
+    <h1>Authority Signature Verification</h1>
+    <p class="text-muted">Confirm document authenticity using authority digital signature</p>
 </div>
 
 <div class="row g-4">
-    <div class="col-lg-5">
+    <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
-                <i class="bi bi-search"></i> Select Document
-            </div>
-            <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label class="form-label">Document ID</label>
-                        {{ form.document_id }}
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="bi bi-patch-check"></i> Verify Signature
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-7">
-        {% if document %}
-        <div class="card">
-            <div class="card-header">
-                <i class="bi bi-file-earmark-check"></i> Verification Result
+                <i class="bi bi-file-earmark-check"></i> {{ document.title }}
             </div>
             <div class="card-body">
                 <div class="verify-details">
                     <div class="detail-row">
-                        <span class="detail-label">Document</span>
-                        <span class="detail-value">{{ document.title }}</span>
+                        <span class="detail-label">Document ID</span>
+                        <span class="detail-value">{{ document.id }}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Status</span>
                         <span class="badge status-{{ document.status }}">{{ document.get_status_display }}</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">File Hash (SHA-256)</span>
-                        <span class="detail-value hash-value">{{ document.file_hash|default:"N/A" }}</span>
+                        <span class="detail-label">Authority Signer</span>
+                        <span class="detail-value">{{ signature.authority.username }}</span>
                     </div>
-                    {% if document.signature %}
                     <div class="detail-row">
                         <span class="detail-label">Algorithm</span>
-                        <span class="detail-value">{{ document.signature.algorithm }}</span>
+                        <span class="detail-value">{{ signature.algorithm }}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Signed At</span>
-                        <span class="detail-value">{{ document.signature.signed_at|date:"M d, Y H:i" }}</span>
+                        <span class="detail-value">{{ signature.signed_at|date:"M d, Y H:i" }}</span>
                     </div>
-                    {% endif %}
+                    <div class="detail-row">
+                        <span class="detail-label">Document Hash</span>
+                        <span class="detail-value hash-value">{{ signature.document_hash }}</span>
+                    </div>
                 </div>
 
                 {% if result == 'valid' %}
                 <div class="result-banner result-valid">
                     <i class="bi bi-check-circle-fill"></i>
                     <div>
-                        <strong>Signature Valid</strong>
-                        <p>Document is authentic and has not been tampered with.</p>
+                        <strong>Authority Signature Valid</strong>
+                        <p>Document is verified and carries a valid authority digital signature.</p>
                     </div>
                 </div>
                 {% elif result == 'tampered' %}
@@ -74,7 +55,7 @@
                     <i class="bi bi-exclamation-triangle-fill"></i>
                     <div>
                         <strong>Tampering Detected</strong>
-                        <p>The document has been modified after signing.</p>
+                        <p>Document was modified after authority signing.</p>
                     </div>
                 </div>
                 {% elif result == 'invalid' %}
@@ -82,20 +63,18 @@
                     <i class="bi bi-x-circle-fill"></i>
                     <div>
                         <strong>Verification Failed</strong>
-                        <p>The digital signature could not be verified.</p>
+                        <p>Authority signature could not be verified.</p>
                     </div>
                 </div>
                 {% endif %}
             </div>
         </div>
-        {% else %}
-        <div class="card">
-            <div class="card-body empty-state">
-                <i class="bi bi-shield-check"></i>
-                <p>Enter a document ID and click Verify to check its digital signature.</p>
-            </div>
-        </div>
-        {% endif %}
     </div>
+</div>
+
+<div class="mt-3">
+    <a href="{% url 'dashboard' %}" class="btn btn-outline-light">
+        <i class="bi bi-arrow-left"></i> Back to My Documents
+    </a>
 </div>
 {% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'signer/base.html' %}
+
+{% block title %}Document Signer System{% endblock %}
+
+{% block auth_content %}
+<div class="auth-card home-card">
+    <div class="auth-header">
+        <i class="bi bi-shield-lock-fill auth-icon"></i>
+        <h2>Document Signer System</h2>
+        <p class="text-muted">Secure Digital Document Verification Platform</p>
+    </div>
+    <div class="home-portals">
+        <a href="{% url 'user_login' %}" class="portal-card portal-user">
+            <i class="bi bi-person-fill"></i>
+            <h3>User Login</h3>
+            <p>Upload documents for authority verification</p>
+        </a>
+        <a href="{% url 'authority_login' %}" class="portal-card portal-authority">
+            <i class="bi bi-shield-check"></i>
+            <h3>Authority Login</h3>
+            <p>Review and digitally sign submitted documents</p>
+        </a>
+    </div>
+    <p class="auth-footer">New user? <a href="{% url 'register' %}">Register here</a></p>
+</div>
+{% endblock %}

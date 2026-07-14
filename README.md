@@ -78,8 +78,17 @@ document-signer-system/
 ## System Workflow
 
 ```
-Login → Upload Document → Generate Signature → Verify Signature
+User Login → Upload Document → Sent to Authority
+Authority Login → Review Document → Verify & Sign with RSA-2048
+User → View Verified Document → Verify Authority Signature
 ```
+
+## Login Accounts
+
+| Portal | URL | Default Credentials |
+|--------|-----|---------------------|
+| **User Login** | `/login/user/` | Register a new account |
+| **Authority Login** | `/login/authority/` | `authority` / `authority123` |
 
 ## Security
 

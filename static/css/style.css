@@ -251,8 +251,10 @@ body {
 }
 
 .status-uploaded { background: #374151; color: #d1d5db; }
+.status-pending_authority { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
 .status-signed { background: rgba(34, 197, 94, 0.15); color: var(--success); }
 .status-verified { background: rgba(6, 182, 212, 0.15); color: var(--info); }
+.status-rejected { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
 .status-tampered { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
 
 /* Stats */
@@ -398,6 +400,33 @@ body {
 .text-muted {
     color: var(--text-muted) !important;
 }
+
+/* Home portal */
+.home-card { max-width: 520px; }
+.home-portals { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
+.portal-card {
+    display: block; padding: 1.25rem; border-radius: 12px; text-decoration: none;
+    border: 1px solid var(--border); transition: all 0.2s; color: var(--text-primary);
+}
+.portal-card:hover { transform: translateY(-2px); color: var(--text-primary); }
+.portal-card i { font-size: 1.75rem; margin-bottom: 0.5rem; display: block; }
+.portal-card h3 { font-size: 1.1rem; margin-bottom: 0.25rem; }
+.portal-card p { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
+.portal-user { background: rgba(79, 140, 255, 0.08); border-color: rgba(79, 140, 255, 0.3); }
+.portal-user i { color: var(--accent); }
+.portal-user:hover { background: rgba(79, 140, 255, 0.15); }
+.portal-authority { background: rgba(34, 197, 94, 0.08); border-color: rgba(34, 197, 94, 0.3); }
+.portal-authority i { color: var(--success); }
+.portal-authority:hover { background: rgba(34, 197, 94, 0.15); }
+
+/* Authority theme */
+.authority-icon { color: var(--success) !important; }
+.btn-authority { background: var(--success); border-color: var(--success); color: #fff; font-weight: 600; border-radius: 8px; padding: 0.6rem 1.25rem; }
+.btn-authority:hover { background: #16a34a; border-color: #16a34a; color: #fff; }
+.sidebar-authority { border-right-color: rgba(34, 197, 94, 0.2); }
+.role-badge { margin: 0 1rem 1rem; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; text-align: center; }
+.role-user { background: rgba(79, 140, 255, 0.15); color: var(--accent); }
+.role-authority { background: rgba(34, 197, 94, 0.15); color: var(--success); }
 
 /* Responsive */
 @media (max-width: 768px) {

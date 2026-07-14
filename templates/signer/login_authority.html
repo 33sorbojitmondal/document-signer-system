@@ -1,0 +1,29 @@
+{% extends 'signer/base.html' %}
+
+{% block title %}Authority Login - Document Signer System{% endblock %}
+
+{% block auth_content %}
+<div class="auth-card authority-card">
+    <div class="auth-header">
+        <i class="bi bi-shield-check auth-icon authority-icon"></i>
+        <h2>Authority Login</h2>
+        <p class="text-muted">Verify and sign submitted documents</p>
+    </div>
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Authority Username</label>
+            {{ form.username }}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            {{ form.password }}
+        </div>
+        <button type="submit" class="btn btn-authority w-100">Login as Authority</button>
+    </form>
+    <p class="auth-footer">
+        <a href="{% url 'user_login' %}">User Login</a> &middot;
+        <a href="{% url 'home' %}">Home</a>
+    </p>
+</div>
+{% endblock %}

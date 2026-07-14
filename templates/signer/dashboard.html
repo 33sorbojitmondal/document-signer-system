@@ -1,18 +1,18 @@
 {% extends 'signer/base.html' %}
 
-{% block title %}Dashboard - Document Signer System{% endblock %}
+{% block title %}My Documents - Document Signer System{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h1>Dashboard</h1>
-    <p class="text-muted">Upload, sign, and manage your digital documents</p>
+    <h1>My Documents</h1>
+    <p class="text-muted">Upload documents — they are sent directly to authority for verification</p>
 </div>
 
 <div class="row g-4">
     <div class="col-lg-4">
         <div class="card upload-card">
             <div class="card-header">
-                <i class="bi bi-cloud-upload"></i> Upload Document
+                <i class="bi bi-cloud-upload"></i> Submit Document
             </div>
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data">
@@ -26,7 +26,7 @@
                         {{ upload_form.file }}
                     </div>
                     <button type="submit" class="btn btn-primary w-100">
-                        <i class="bi bi-upload"></i> Upload
+                        <i class="bi bi-send"></i> Submit to Authority
                     </button>
                 </form>
             </div>
@@ -39,8 +39,8 @@
                     <span class="stat-value">{{ documents|length }}</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-label">Algorithm</span>
-                    <span class="stat-value">RSA-2048</span>
+                    <span class="stat-label">Workflow</span>
+                    <span class="stat-value">Authority Sign</span>
                 </div>
             </div>
         </div>
@@ -49,7 +49,7 @@
     <div class="col-lg-8">
         <div class="card documents-card">
             <div class="card-header">
-                <i class="bi bi-file-earmark-text"></i> My Documents
+                <i class="bi bi-file-earmark-text"></i> Submitted Documents
             </div>
             <div class="card-body p-0">
                 {% if documents %}
@@ -60,7 +60,7 @@
                                 <th>ID</th>
                                 <th>Title</th>
                                 <th>Status</th>
-                                <th>Uploaded</th>
+                                <th>Submitted</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -72,13 +72,8 @@
                                 <td>
                                     <span class="badge status-{{ doc.status }}">{{ doc.get_status_display }}</span>
                                 </td>
-                                <td>{{ doc.uploaded_at|date:"M d, Y H:i" }}</td>
+                                <td>{{ doc.submitted_at|date:"M d, Y H:i" }}</td>
                                 <td class="action-buttons">
-                                    {% if doc.status == 'uploaded' %}
-                                    <a href="{% url 'sign_document' doc.id %}" class="btn btn-sm btn-success">
-                                        <i class="bi bi-pen"></i> Sign
-                                    </a>
-                                    {% endif %}
                                     {% if doc.signature %}
                                     <a href="{% url 'verify_document' doc.id %}" class="btn btn-sm btn-info">
                                         <i class="bi bi-patch-check"></i> Verify
@@ -96,7 +91,7 @@
                 {% else %}
                 <div class="empty-state">
                     <i class="bi bi-inbox"></i>
-                    <p>No documents uploaded yet. Upload your first document to get started.</p>
+                    <p>No documents submitted yet. Upload a document to send it to authority.</p>
                 </div>
                 {% endif %}
             </div>

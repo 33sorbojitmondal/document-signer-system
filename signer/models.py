@@ -3,24 +3,34 @@ from django.db import models
 
 
 class UserProfile(models.Model):
-    """Extended user profile with RSA cryptographic keys."""
+    """Extended user profile with RSA cryptographic keys and role."""
+
+    ROLE_CHOICES = [
+        ('user', 'User'),
+        ('authority', 'Authority'),
+    ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='user')
     private_key = models.TextField(help_text='RSA private key (PEM format)')
     public_key = models.TextField(help_text='RSA public key (PEM format)')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'Profile: {self.user.username}'
+        return f'{self.user.username} ({self.get_role_display()})'
+
+    @property
+    def is_authority(self):
+        return self.role == 'authority'
 
 
 class Document(models.Model):
     """Uploaded document metadata and file reference."""
 
     STATUS_CHOICES = [
-        ('uploaded', 'Uploaded'),
-        ('signed', 'Signed'),
-        ('verified', 'Verified'),
+        ('pending_authority', 'Pending Authority Review'),
+        ('verified', 'Verified by Authority'),
+        ('rejected', 'Rejected'),
         ('tampered', 'Tampered'),
     ]
 
@@ -30,11 +40,12 @@ class Document(models.Model):
     file_content = models.BinaryField(blank=True, null=True)
     original_filename = models.CharField(max_length=255, blank=True)
     file_hash = models.CharField(max_length=64, blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='uploaded')
-    uploaded_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending_authority')
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    reviewed_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        ordering = ['-uploaded_at']
+        ordering = ['-submitted_at']
 
     def __str__(self):
         return f'{self.title} ({self.owner.username})'
@@ -50,14 +61,18 @@ class Document(models.Model):
 
 
 class DigitalSignature(models.Model):
-    """Digital signature record for a signed document."""
+    """Authority digital signature record for a verified document."""
 
     document = models.OneToOneField(Document, on_delete=models.CASCADE, related_name='signature')
-    signer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='signatures')
+    signer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='authority_signatures')
     signature_data = models.TextField(help_text='Base64-encoded RSA signature')
     document_hash = models.CharField(max_length=64)
     algorithm = models.CharField(max_length=50, default='RSA-2048-PSS-SHA256')
     signed_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'Signature for {self.document.title}'
+        return f'Authority signature for {self.document.title}'
+
+    @property
+    def authority(self):
+        return self.signer

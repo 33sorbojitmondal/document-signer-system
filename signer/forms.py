@@ -42,10 +42,12 @@ class DocumentUploadForm(forms.Form):
     )
 
 
-class VerifyDocumentForm(forms.Form):
-    document_id = forms.IntegerField(
-        widget=forms.NumberInput(attrs={
+class RejectDocumentForm(forms.Form):
+    reason = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={
             'class': 'form-control',
-            'placeholder': 'Document ID',
+            'placeholder': 'Optional rejection reason',
+            'rows': 3,
         })
     )

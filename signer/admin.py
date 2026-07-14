@@ -5,14 +5,15 @@ from .models import DigitalSignature, Document, UserProfile
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'created_at']
+    list_display = ['user', 'role', 'created_at']
+    list_filter = ['role']
     search_fields = ['user__username']
 
 
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
-    list_display = ['title', 'owner', 'status', 'uploaded_at']
-    list_filter = ['status', 'uploaded_at']
+    list_display = ['title', 'owner', 'status', 'submitted_at', 'reviewed_at']
+    list_filter = ['status', 'submitted_at']
     search_fields = ['title', 'owner__username']
 
 
